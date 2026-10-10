@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ww-net"
+version = "0.1.2"
+description = "Een netwerk-checker die geduldig wacht, slim omgaat met DNS, en logt via arin_log."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Marcus Aurelius" }
+]
+keywords = ["netwerk", "network", "internet", "host", "dns", "check", "pipeline"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Networking",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "arin-log>=0.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/marcus-aurelius-hu/ww_net"
+Repository = "https://github.com/marcus-aurelius-hu/ww_net"
+Issues = "https://github.com/marcus-aurelius-hu/ww_net/issues"
+
+[tool.setuptools]
+packages = ["ww_net"]
