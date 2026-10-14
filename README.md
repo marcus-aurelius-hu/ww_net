@@ -43,6 +43,16 @@ als het internet even wegvalt.
 
 Draait een snelle netwerk-check: is er internet, en is een host bereikbaar?
 
+## Screenshots
+
+Console — schoon, zonder emoji's:
+
+![ww-net console](https://raw.githubusercontent.com/marcus-aurelius-hu/ww_net/main/docs/console.png)
+
+Logbestand — met emoji's en tijdstempels:
+
+![ww-net logbestand](https://raw.githubusercontent.com/marcus-aurelius-hu/ww_net/main/docs/log_file.png)
+
 ## Wachten
 
 De `wait`-parameter is de tijd (in seconden) waarna `ww_net` opgeeft.

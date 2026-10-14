@@ -7,6 +7,7 @@ from sys import _getframe
 
 br = chr(10)
 prgnm = "ww_net"
+LOG_THRESHOLD = 2.5
 
 class CheckNet:
     def __init__(self, timeout=1.5, wait=3600, logloc=None):
@@ -56,29 +57,35 @@ class CheckNet:
         wait = self.wait if wait is None else wait
         logloc = self.logloc if logloc is None else logloc
         fcnm = _getframe().f_code.co_name
-        
-        tmp = f"{typ} ; connection ; exception"
-        log_notes(tmp)
-        log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
-        log_notes(f"⚠️ {prgnm} ; {fcnm} ; {strftime('%H:%M:%S')}", cons=False, logloc=logloc)
+
         exc_time = time()
         start_time = time()
         count = 1
+        logged = False
 
         while time() - start_time < wait:
             if self.tcp_check():
-                tmp = f"{typ} ; connection ; restored"
-                log_notes(tmp)
-                log_notes(f"✅ {tmp}", cons=False, logloc=logloc)
-                log_notes(f"✅ {prgnm} ; {fcnm} ; {time() - exc_time:.3f} sec{br}", cons=False, logloc=logloc)
+                if logged:
+                    eltm = time() - exc_time
+                    tmp = f"{typ} ; connection ; restored"
+                    log_notes(tmp)
+                    log_notes(f"✅ {tmp}", cons=False, logloc=logloc)
+                    log_notes(f"✅ {prgnm} ; {fcnm} ; {eltm:.3f} sec{br}", cons=False, logloc=logloc)
                 return True
+
+            if not logged:
+                eltm = time() - exc_time
+                if eltm >= LOG_THRESHOLD:
+                    tmp = f"{typ} ; connection ; exception"
+                    log_notes(tmp)
+                    log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
+                    log_notes(f"⚠️ {prgnm} ; {fcnm} ; {strftime('%H:%M:%S')}", cons=False, logloc=logloc)
+                    logged = True
+
             interval = self.get_interval(count)
             count += 1
             sleep(interval)
-        tmp = f"{typ} ; connection ; timeout"
-        log_notes(tmp)
-        log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
-        log_notes(f"⚠️ {prgnm} ; {fcnm} ; {time() - exc_time:.3f} sec{br}", cons=False, logloc=logloc)
+
         return False
 
     def is_host(self, host, wait=None, logloc=None):
@@ -93,30 +100,34 @@ class CheckNet:
             try:
                 gethostbyname(host)
                 start_time = time()
-                exc_time = None
+                exc_time = time()
                 count = 1
+                logged = False
                 while time() - start_time < wait:
-                    if count == 2:
-                        tmp = f"{host} ; connection ; exception"
-                        log_notes(tmp)
-                        log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
-                        log_notes(f"⚠️ {prgnm} ; {fcnm} ; {strftime('%H:%M:%S')}", cons=False, logloc=logloc)
-                        exc_time = time()
                     if self.tcp_check(ip=host):
-                        if count > 1:
+                        if logged:
+                            eltm = time() - exc_time
                             tmp = f"{host} ; connection ; restored"
                             log_notes(tmp)
                             log_notes(f"✅ {tmp}", cons=False, logloc=logloc)
-                            log_notes(f"✅ {prgnm} ; {fcnm} ; {time() - exc_time:.3f} sec{br}", cons=False,
+                            log_notes(f"✅ {prgnm} ; {fcnm} ; {eltm:.3f} sec{br}", cons=False,
                                       logloc=logloc)
                         return True
+
+                    if not logged:
+                        eltm = time() - exc_time
+                        if eltm >= LOG_THRESHOLD:
+                            tmp = f"{host} ; connection ; exception"
+                            log_notes(tmp)
+                            log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
+                            log_notes(f"⚠️ {prgnm} ; {fcnm} ; {strftime('%H:%M:%S')}", cons=False,
+                                      logloc=logloc)
+                            logged = True
+
                     interval = self.get_interval(count)
                     count += 1
                     sleep(interval)
-                tmp = f"{host} ; connection ; timeout"
-                log_notes(tmp)
-                log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
-                log_notes(f"⚠️ {prgnm} ; {fcnm} ; {time() - exc_time:.3f} sec{br}", cons=False, logloc=logloc)
+
                 return False
             except gaierror:
                 return self.wait_net(typ=host, wait=wait, logloc=logloc)
@@ -134,3 +145,7 @@ def is_host(host, wait=None, logloc=None):
     return _net.is_host(host, wait=wait, logloc=logloc)
 
 __all__ = ['is_net', 'is_host']
+
+if __name__ == "__main__":
+    from ww_net import demo
+    demo()
