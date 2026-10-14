@@ -1,3 +1,22 @@
+"""
+net.py
+------
+Interne implementatie van ww_net.
+
+Bevat de klasse CheckNet en de module-brede instantie _net waarop de
+publieke functies is_net en is_host voortbouwen. Gebruik de klasse of
+de instantie niet rechtstreeks — importeer uit ww_net.
+
+Werking
+-------
+    - TCP in plaats van ICMP, naar poorten 443 en 80.
+    - Willekeurige DNS-server uit een vaste lijst voor is_net.
+    - Oplopende intervallen tijdens het wachten (1s -> 15s).
+    - is_host resolvet de hostname bij elke iteratie opnieuw, zodat
+      roterende IP's (CDN's) niet worden gemist.
+    - Logt via arin_log; console schoon, logbestand met emoji's.
+"""
+
 from socket import gaierror, gethostbyname, socket, AF_INET, SOCK_STREAM
 from time import sleep, time, strftime
 from urllib.parse import urlparse
@@ -96,45 +115,39 @@ class CheckNet:
         if "://" in host:
             host = urlparse(host).netloc.replace('www.', '')
 
-        if self.tcp_check():
+        start_time = time()
+        exc_time = time()
+        count = 1
+        logged = False
+
+        while time() - start_time < wait:
             try:
-                gethostbyname(host)
-                start_time = time()
-                exc_time = time()
-                count = 1
-                logged = False
-                while time() - start_time < wait:
-                    if self.tcp_check(ip=host):
-                        if logged:
-                            eltm = time() - exc_time
-                            tmp = f"{host} ; connection ; restored"
-                            log_notes(tmp)
-                            log_notes(f"✅ {tmp}", cons=False, logloc=logloc)
-                            log_notes(f"✅ {prgnm} ; {fcnm} ; {eltm:.3f} sec{br}", cons=False,
-                                      logloc=logloc)
-                        return True
-
-                    if not logged:
+                ip = gethostbyname(host)
+                if self.tcp_check(ip=ip):
+                    if logged:
                         eltm = time() - exc_time
-                        if eltm >= LOG_THRESHOLD:
-                            tmp = f"{host} ; connection ; exception"
-                            log_notes(tmp)
-                            log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
-                            log_notes(f"⚠️ {prgnm} ; {fcnm} ; {strftime('%H:%M:%S')}", cons=False,
-                                      logloc=logloc)
-                            logged = True
-
-                    interval = self.get_interval(count)
-                    count += 1
-                    sleep(interval)
-
-                return False
+                        tmp = f"{host} ; connection ; restored"
+                        log_notes(tmp)
+                        log_notes(f"✅ {tmp}", cons=False, logloc=logloc)
+                        log_notes(f"✅ {prgnm} ; {fcnm} ; {eltm:.3f} sec{br}", cons=False, logloc=logloc)
+                    return True
             except gaierror:
-                return self.wait_net(typ=host, wait=wait, logloc=logloc)
-            except Exception:
-                return self.wait_net(typ=host, wait=wait, logloc=logloc)
-        else:
-            return self.wait_net(typ=host, wait=wait, logloc=logloc)
+                pass
+
+            if not logged:
+                eltm = time() - exc_time
+                if eltm >= LOG_THRESHOLD:
+                    tmp = f"{host} ; connection ; exception"
+                    log_notes(tmp)
+                    log_notes(f"⚠️ {tmp}", cons=False, logloc=logloc)
+                    log_notes(f"⚠️ {prgnm} ; {fcnm} ; {strftime('%H:%M:%S')}", cons=False, logloc=logloc)
+                    logged = True
+
+            interval = self.get_interval(count)
+            count += 1
+            sleep(interval)
+
+        return False
 
 _net = CheckNet()
 
@@ -147,5 +160,5 @@ def is_host(host, wait=None, logloc=None):
 __all__ = ['is_net', 'is_host']
 
 if __name__ == "__main__":
-    from ww_net import demo
+    from ww_net.demo import demo
     demo()
