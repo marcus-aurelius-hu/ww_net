@@ -107,4 +107,4 @@ Dit project is gelicentieerd onder de MIT-licentie — zie het [LICENSE](LICENSE
 
 ## Status
 
-**Alpha (0.1.8).** De kernfunctionaliteit is stabiel en volledig operationeel. Geautomatiseerde tests zijn momenteel in ontwikkeling.
+**Alpha (0.1.10).** De kernfunctionaliteit is stabiel en volledig operationeel. Geautomatiseerde tests zijn momenteel in ontwikkeling.
