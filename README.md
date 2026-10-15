@@ -37,11 +37,18 @@ if is_net(host="https://google.com", wait=43200):
 
 ## Demo
 
+Twee manieren om de demonstratie te starten:
+
+```bash
+ww-net
+```
+
 ```bash
 python -m ww_net
 ```
 
-Dit commando start een demonstratie die de werking visueel maakt: de algemene internet-check, de bereikbaarheid van een specifieke host en de nette afhandeling van een niet-bestaande host.
+Beide starten dezelfde demonstratie: de algemene internet-check, de bereikbaarheid van een specifieke host en de nette afhandeling van een niet-bestaande host.
+
 
 ## Screenshots
 
@@ -100,4 +107,4 @@ Dit project is gelicentieerd onder de MIT-licentie — zie het [LICENSE](LICENSE
 
 ## Status
 
-**Alpha (0.1.7).** De kernfunctionaliteit is stabiel en volledig operationeel. Geautomatiseerde tests zijn momenteel in ontwikkeling.
+**Alpha (0.1.8).** De kernfunctionaliteit is stabiel en volledig operationeel. Geautomatiseerde tests zijn momenteel in ontwikkeling.

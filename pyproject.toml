@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ww-net"
-version = "0.1.7"
+version = "0.1.8"
 description = "Een netwerk-checker die geduldig wacht, slim omgaat met DNS, en logt via arin_log."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -29,13 +29,16 @@ classifiers = [
 ]
 
 dependencies = [
-    "arin-log>=0.2.4",
+    "arin-log>=0.2.5",
 ]
 
 [project.urls]
 Homepage = "https://github.com/marcus-aurelius-hu/ww_net"
 Repository = "https://github.com/marcus-aurelius-hu/ww_net"
 Issues = "https://github.com/marcus-aurelius-hu/ww_net/issues"
+
+[project.scripts]
+ww-net = "ww_net.demo:demo"
 
 [tool.setuptools]
 packages = ["ww_net"]

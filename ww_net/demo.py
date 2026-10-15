@@ -39,7 +39,7 @@ def demo():
     sleep(1)
 
     # --- 2. Host check (bestaande host) ---
-    tmp = f"{prgnm} ; is_net ; {tijd()}"
+    tmp = f"{prgnm} ; is_host ; {tijd()}"
     log_notes(tmp)
     log_notes(f"🌍 {tmp}", cons=False, logloc=prgnm)
 
