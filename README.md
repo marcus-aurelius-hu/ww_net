@@ -107,4 +107,4 @@ MIT — zie [LICENSE](LICENSE).
 
 ## Status
 
-**Alpha (0.1.5).** The core works. Tests are still in development.
+**Alpha (0.1.6).** The core works. Tests are still in development.

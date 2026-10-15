@@ -18,7 +18,7 @@ Publieke API
 Beide functies retourneren True of False.
 """
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 from ww_net.net import (
     is_net,

@@ -12,15 +12,16 @@ Draai met:
     python -m ww_net.demo
 """
 
-from time import time, sleep
-from arin_log import log_start, log_exit, log_notes, tijd
+from arin_log import log_start, log_exit, log_notes, tijd, cls
 from ww_net import is_net, is_host
+from time import time, sleep
 
 prgnm = 'ww_net'
 br = chr(10)
 
 
 def demo():
+    cls()
     log_start(prgnm, logloc=prgnm)
 
     # --- 1. Internet check ---
@@ -35,7 +36,7 @@ def demo():
     log_notes(tmp)
     log_notes(f"✅ {tmp}", cons=False, logloc=prgnm)
 
-    sleep(2)
+    sleep(1)
 
     # --- 2. Host check (bestaande host) ---
     tmp = f"{prgnm} ; is_host ; {tijd()}"
@@ -49,7 +50,7 @@ def demo():
     log_notes(tmp)
     log_notes(f"✅ {tmp}", cons=False, logloc=prgnm)
 
-    sleep(2)
+    sleep(1)
 
     # --- 3. Host check (niet-bestaande host -> staged exception) ---
     tmp = "Demo staged exception for host: http://nonexistent.host"
@@ -69,5 +70,4 @@ def demo():
 
 if __name__ == "__main__":
     demo()
-    exit(0)
     
