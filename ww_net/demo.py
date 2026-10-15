@@ -9,12 +9,12 @@ Laat zien:
     - hoe een niet-bestaande host netjes wordt afgehandeld
 
 Draai met:
-    python -m ww_net.demo
+    python -m ww_net
 """
 
 from arin_log import log_start, log_exit, log_notes, tijd, cls
-from ww_net import is_net, is_host
 from time import time, sleep
+from ww_net import is_net
 
 prgnm = 'ww_net'
 br = chr(10)
@@ -39,12 +39,12 @@ def demo():
     sleep(1)
 
     # --- 2. Host check (bestaande host) ---
-    tmp = f"{prgnm} ; is_host ; {tijd()}"
+    tmp = f"{prgnm} ; is_net ; {tijd()}"
     log_notes(tmp)
     log_notes(f"🌍 {tmp}", cons=False, logloc=prgnm)
 
     t0 = time()
-    result = is_host("https://www.google.com/", wait=30)
+    result = is_net(host="https://google.com", wait=30)
     eltm = time() - t0
     tmp = f"google.com ; {result} ; {eltm * 1000:.2f} msec{br}"
     log_notes(tmp)
@@ -58,7 +58,7 @@ def demo():
     log_notes(f"🌍 {tmp}", cons=False, logloc=prgnm)
 
     t0 = time()
-    result = is_host("http://nonexistent.host", wait=5)
+    result = is_net(host="http://nonexistent.host", wait=5)
     eltm = time() - t0
     tmp = f"nonexistent.host; {result} ; time: {eltm:.3f} sec"
     log_notes(tmp)
@@ -70,4 +70,5 @@ def demo():
 
 if __name__ == "__main__":
     demo()
+
     

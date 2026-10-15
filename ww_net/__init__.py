@@ -3,29 +3,22 @@ ww_net
 ------
 Een lichtgewicht netwerk-checker voor langlopende pipelines.
 
-Controleert of er internet is en of een specifieke host bereikbaar is.
+Controleert of er internet is of dat een specifieke host bereikbaar is.
 Wacht geduldig tot de verbinding terugkomt, met oplopende intervallen,
 en logt ondertussen via arin_log.
 
 Publieke API
 ------------
-    is_net(wait=None, logloc=None)
-        Controleert of er internet is.
+    is_net(host=None, wait=None, logloc=None)
+        Controleert de netwerkverbinding.
+        Als 'host' is ingevuld, wordt de specifieke host gecontroleerd.
+        Anders wordt de status van het internet gecontroleerd.
 
-    is_host(host, wait=None, logloc=None)
-        Controleert of een specifieke host bereikbaar is.
-
-Beide functies retourneren True of False.
+De functie retourneert True of False.
 """
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
-from ww_net.net import (
-    is_net,
-    is_host,
-)
+from ww_net.net import (is_net,)
 
-__all__ = [
-    "is_net",
-    "is_host",
-]
+__all__ = ["is_net",]

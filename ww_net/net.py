@@ -3,17 +3,17 @@ net.py
 ------
 Interne implementatie van ww_net.
 
-Bevat de klasse CheckNet en de module-brede instantie _net waarop de
-publieke functies is_net en is_host voortbouwen. Gebruik de klasse of
-de instantie niet rechtstreeks — importeer uit ww_net.
+Bevat de klasse CheckNet en de module-brede instantie _net
+Gebruik de klasse of de instantie niet rechtstreeks.
+Importeer alleen de publieke functie is_net uit ww_net.
 
 Werking
 -------
     - TCP in plaats van ICMP, naar poorten 443 en 80.
     - Willekeurige DNS-server uit een vaste lijst voor is_net.
     - Oplopende intervallen tijdens het wachten (1s -> 15s).
-    - is_host resolvet de hostname bij elke iteratie opnieuw, zodat
-      roterende IP's (CDN's) niet worden gemist.
+    - Bij een host-check wordt de hostname bij elke iteratie opnieuw geresolved,
+      zodat roterende IP's (CDN's) niet worden gemist.
     - Logt via arin_log; console schoon, logbestand met emoji's.
 """
 
@@ -151,10 +151,10 @@ class CheckNet:
 
 _net = CheckNet()
 
-def is_net(wait=None, logloc=None):
+def is_net(host=None, wait=None, logloc=None):
+    """Controleert of er internet is, of dat een specifieke host bereikbaar is."""
+    if host:
+        return _net.is_host(host, wait=wait, logloc=logloc)
     return _net.is_net(wait=wait, logloc=logloc)
 
-def is_host(host, wait=None, logloc=None):
-    return _net.is_host(host, wait=wait, logloc=logloc)
-
-__all__ = ['is_net', 'is_host']
+__all__ = ['is_net']

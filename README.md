@@ -1,110 +1,103 @@
 # ww-net
 
-Een netwerk-checker die geduldig wacht, slim omgaat met DNS, en logt
-via `arin_log`. Gebouwd voor langlopende pipelines die niet mogen vallen
-als het internet even wegvalt.
+Een lichtgewicht netwerk-checker die geduldig wacht, slim omgaat met DNS en logt via `arin_log`. Speciaal gebouwd voor langlopende datastromen en pipelines die niet mogen crashen als de internetverbinding tijdelijk wegvalt.
 
 ## Waarom ww-net?
 
-- **Checkt TCP, niet ICMP.** `ping` wordt vaak geblokkeerd door routers
-  en firewalls. `ww-net` test poorten 80 en 443 — precies wat je browser
-  ook doet. Daarom werkt het betrouwbaar achter een router.
-- **Hamert het netwerk niet.** Wacht met oplopende intervallen (1s → 15s),
-  niet met een vaste korte poll.
-- **Kiest willekeurig een DNS-server.** Cloudflare, Google, Quad9, OpenDNS —
-  als één plat ligt, probeert hij een andere.
-- **Wacht uren als het moet.** Eén parameter (`wait`) in seconden; tot 12 uur
-  of langer, zonder het netwerk te belasten.
-- **Logt via `arin_log`.** Netwerkproblemen komen in je bestaande logbestand,
-  niet in een apart spoor dat je later moet samenvoegen.
-- **Werkt voor twee vragen.** "Is er internet?" én "Is déze host bereikbaar?"
+- **TCP in plaats van ICMP:** Het traditionele `ping`-commando wordt vaak geblokkeerd door routers en firewalls. `ww-net` test via de poorten 80 en 443 — precies zoals een webbrowser dat doet. Hierdoor werkt de controle altijd betrouwbaar, ook achter strikte firewalls.
+- **Geen netwerkbelasting:** De tool bestookt het netwerk niet met constante aanvragen. Tijdens een onderbreking loopt het interval stapsgewijs op van 1 naar 15 seconden.
+- **Dynamische DNS-keuze:** Er wordt willekeurig gekozen uit betrouwbare DNS-servers (Cloudflare, Google, Quad9, OpenDNS). Mocht er één server onbereikbaar zijn, dan schakelt de tool direct over naar een andere.
+- **Urenlang geduld:** Met de parameter `wait` stel je eenvoudig de maximale wachttijd in seconden in (bijvoorbeeld tot 12 uur of langer), zonder dat dit extra resources kost.
+- **Geïntegreerde logging:** Dankzij de integratie met `arin_log` worden netwerkstoringen direct in je bestaande logbestanden weggeschreven. Je hoeft achteraf dus geen losse logbestanden samen te voegen.
+- **Eén slimme functie:** "Is er algemeen internet?" óf "Is deze specifieke host bereikbaar?". Beide vragen worden beantwoord vanuit dezelfde intuïtieve functie.
 
 ## Installatie
 
-    pip install ww-net
+```bash
+pip install ww-net
+```
 
-`arin_log` wordt automatisch mee geïnstalleerd als dependency.
+De library `arin_log` wordt automatisch als afhankelijkheid (dependency) meegeïnstalleerd.
 
-> **Eerste gebruik:** bij de eerste import opent `arin_log` een dialoog om
-> een folder voor de logbestanden te kiezen. Daarna wordt die keuze onthouden.
+> **Eerste gebruik:** Bij de allereerste import opent `arin_log` een dialoogvenster waarin je een map voor de logbestanden kunt kiezen. Deze keuze wordt vervolgens definitief onthouden.
 
 ## Gebruik
 
-    from ww_net import is_net, is_host
+```python
+from ww_net import is_net
 
-    # Controleer of er internet is (wacht tot 12 uur)
-    if is_net(wait=43200):
-        print("Internet is beschikbaar")
+# 1. Controleer of er algemeen internet is (wacht maximaal 12 uur)
+if is_net(wait=43200):
+    print("Internet is beschikbaar")
 
-    # Controleer of een specifieke host bereikbaar is
-    if is_host("https://www.google.com/", wait=43200):
-        print("Host is bereikbaar")
+# 2. Controleer of een specifieke host bereikbaar is (wacht maximaal 12 uur)
+if is_net(host="https://google.com", wait=43200):
+    print("Host is bereikbaar")
+```
 
 ## Demo
 
-    python -m ww_net
+```bash
+python -m ww_net
+```
 
-Draait een snelle netwerk-check: is er internet, is een host bereikbaar,
-en hoe wordt een niet-bestaande host afgehandeld?
+Dit commando start een demonstratie die de werking visueel maakt: de algemene internet-check, de bereikbaarheid van een specifieke host en de nette afhandeling van een niet-bestaande host.
 
 ## Screenshots
 
-Console — schoon, zonder emoji's:
+**Console** — Schoon en zonder emoji's:
 
 ![ww-net console](https://raw.githubusercontent.com/marcus-aurelius-hu/ww_net/main/docs/console.png)
 
-Logbestand — met emoji's en tijdstempels:
+**Logbestand** — Inclusief emoji's en exacte tijdstempels:
 
 ![ww-net logbestand](https://raw.githubusercontent.com/marcus-aurelius-hu/ww_net/main/docs/log_file.png)
 
-## Wachten
+## Wachttijden en intervallen
 
-De `wait`-parameter is de tijd (in seconden) waarna `ww_net` opgeeft.
-De standaardwaarde is `3600` (1 uur). Omdat het in seconden gaat, kun je
-gemakkelijk langere periodes instellen:
+De `wait`-parameter bepaalt na hoeveel seconden `ww_net` definitief opgeeft. De standaardwaarde is `3600` seconden (1 uur). Handige referentiewaarden voor langere periodes:
 
-| Duur | Seconden |
-|------|----------|
-| 1 uur | 3600 |
-| 4 uur | 14400 |
-| 8 uur | 28800 |
-| 12 uur | 43200 |
+| Gewenste duur | Waarde in seconden |
+| :--- | :--- |
+| 1 uur | `3600` |
+| 4 uur | `14400` |
+| 8 uur | `28800` |
+| 12 uur | `43200` |
 
-Tijdens het wachten loopt het interval op van 1 seconde tot 15 seconden.
-Zo wordt het netwerk niet onnodig belast, maar blijft `ww_net` wel alert.
+Tijdens het wachten loopt het controle-interval stapsgewijs op van 1 seconde naar maximaal 15 seconden. Dit voorkomt onnodig netwerkverkeer, terwijl de library alert blijft op herstel van de verbinding.
 
-## API
+## API-referentie
 
-| Functie | Beschrijving |
-|---------|--------------|
-| `is_net(wait=None, logloc=None)` | Controleert of er internet is. Wacht tot `wait` seconden. |
-| `is_host(host, wait=None, logloc=None)` | Controleert of `host` bereikbaar is. Wacht tot `wait` seconden. |
+### `is_net(host=None, wait=None, logloc=None)`
 
-Beide functies retourneren `True` of `False`.
+Controleert de netwerkverbinding en retourneert `True` of `False`.
 
-## Logging
+| Parameter | Type | Standaardwaarde | Beschrijving |
+| :--- | :--- | :--- | :--- |
+| `host` | `str` | `None` | De URL of het IP-adres dat je wilt controleren. Indien weggelaten (`None`), wordt een algemene internet-check uitgevoerd. |
+| `wait` | `int` | `3600` | De maximale tijd in seconden dat de functie blijft proberen de verbinding te herstellen. |
+| `logloc` | `str` | `None` | De naam van het logbestand waarin de gebeurtenissen moeten worden opgeslagen. |
 
-`ww_net` logt via `arin_log`. De `logloc`-parameter bepaalt in welk
-logbestand de berichten terechtkomen:
+## Logging-configuratie
 
-    from ww_net import is_net
+`ww_net` maakt gebruik van `arin_log`. Met de `logloc`-parameter bepaal je zelf in welk logbestand de netwerkberichten worden weggeschreven:
 
-    # Zonder logloc: berichten gaan naar het standaardbestand (ww_net)
-    is_net(wait=3600)
+```python
+from ww_net import is_net
 
-    # Met logloc: berichten gaan naar een eigen logbestand (mijn_pipeline)
-    is_net(wait=3600, logloc="mijn_pipeline")
+# Zonder logloc: berichten worden opgeslagen in het standaardbestand (ww_net)
+is_net(wait=3600)
 
-Zo kun je netwerkproblemen in het logbestand van je eigen pipeline plaatsen.
+# Met logloc: netwerklogica wordt direct weggeschreven naar je eigen pipeline-log
+is_net(wait=3600, logloc="mijn_pipeline")
+```
 
-Korte hikken (< 2,5 seconde) worden niet gelogd. Alleen echte
-onderbrekingen komen in het logbestand. Zo blijft het logbestand schoon
-en zie je alleen wat de moeite waard is.
+Korte netwerkhikken van minder dan 2,5 seconde worden automatisch genegeerd. Alleen daadwerkelijke onderbrekingen worden geregistreerd. Hierdoor blijven je logbestanden overzichtelijk en vrij van ruis.
 
 ## Licentie
 
-MIT — zie [LICENSE](LICENSE).
+Dit project is gelicentieerd onder de MIT-licentie — zie het [LICENSE](LICENSE)-bestand voor details.
 
 ## Status
 
-**Alpha (0.1.6).** The core works. Tests are still in development.
+**Alpha (0.1.7).** De kernfunctionaliteit is stabiel en volledig operationeel. Geautomatiseerde tests zijn momenteel in ontwikkeling.
