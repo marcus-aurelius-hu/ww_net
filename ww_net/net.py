@@ -158,7 +158,3 @@ def is_host(host, wait=None, logloc=None):
     return _net.is_host(host, wait=wait, logloc=logloc)
 
 __all__ = ['is_net', 'is_host']
-
-if __name__ == "__main__":
-    from ww_net.demo import demo
-    demo()

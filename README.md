@@ -6,6 +6,9 @@ als het internet even wegvalt.
 
 ## Waarom ww-net?
 
+- **Checkt TCP, niet ICMP.** `ping` wordt vaak geblokkeerd door routers
+  en firewalls. `ww-net` test poorten 80 en 443 — precies wat je browser
+  ook doet. Daarom werkt het betrouwbaar achter een router.
 - **Hamert het netwerk niet.** Wacht met oplopende intervallen (1s → 15s),
   niet met een vaste korte poll.
 - **Kiest willekeurig een DNS-server.** Cloudflare, Google, Quad9, OpenDNS —
@@ -39,9 +42,10 @@ als het internet even wegvalt.
 
 ## Demo
 
-    python -m ww_net.demo
+    python -m ww_net
 
-Draait een snelle netwerk-check: is er internet, en is een host bereikbaar?
+Draait een snelle netwerk-check: is er internet, is een host bereikbaar,
+en hoe wordt een niet-bestaande host afgehandeld?
 
 ## Screenshots
 
@@ -93,6 +97,14 @@ logbestand de berichten terechtkomen:
 
 Zo kun je netwerkproblemen in het logbestand van je eigen pipeline plaatsen.
 
+Korte hikken (< 2,5 seconde) worden niet gelogd. Alleen echte
+onderbrekingen komen in het logbestand. Zo blijft het logbestand schoon
+en zie je alleen wat de moeite waard is.
+
 ## Licentie
 
 MIT — zie [LICENSE](LICENSE).
+
+## Status
+
+**Alpha (0.1.5).** The core works. Tests are still in development.
